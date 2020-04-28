@@ -10,7 +10,7 @@ def status():
 
 @blueprint.route('/app_id')
 def app_id():
-    current_app.config['CLIENT_ID']
+    return current_app.config['CLIENT_ID']
 
 
 @blueprint.route('/authorize', methods=['GET'])
