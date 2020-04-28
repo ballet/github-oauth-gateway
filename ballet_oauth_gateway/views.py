@@ -32,7 +32,7 @@ def authorize():
     return 'OK'
 
 
-@blueprint.route('/api/access_code', methods=['POST'])
+@blueprint.route('/api/access_token', methods=['POST'])
 def access_code():
     """User's client calls back here to request token"""
     # 1. get state from request
