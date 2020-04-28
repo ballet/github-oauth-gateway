@@ -34,7 +34,7 @@ def authorize():
 
 @blueprint.route('/api/access_code', methods=['POST'])
 def access_code():
-    """Users calls back here to request token"""
+    """User's client calls back here to request token"""
     # 1. get state from request
     state = request.form.get('state')
 
