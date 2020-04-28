@@ -12,4 +12,20 @@ def lint(c):
 
 @task
 def serve(c):
-    c.run('gunicorn wsgi:app')
+    c.run('honcho start')
+
+
+@task
+def push_env(c, file='.env'):
+    """Push .env key/value pairs to heroku"""
+    from honcho.environ import parse
+    with open(file, 'r') as f:
+        env = parse(f.read())
+    cmd = 'heroku config:set ' + ' '.join(
+        f'{key}={value}' for key, value in env.items())
+    c.run(cmd)
+
+
+@task
+def deploy(c):
+    c.run('git push heroku master')
