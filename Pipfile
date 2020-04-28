@@ -6,10 +6,13 @@ verify_ssl = true
 [dev-packages]
 pytest = "*"
 invoke = "*"
+flake8 = "*"
 
 [packages]
 flask = "*"
 gunicorn = "*"
+flask-sqlalchemy = "*"
+flask-bcrypt = "*"
 
 [requires]
 python_version = "3.8"
