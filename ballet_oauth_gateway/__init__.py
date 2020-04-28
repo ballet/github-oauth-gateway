@@ -19,7 +19,7 @@ def create_app(testing=False):
 
     bcrypt.init_app(app)
 
-    from ballet_oauth_gateway.views import blueprint
+    from ballet_oauth_gateway.api import blueprint
     app.register_blueprint(blueprint)
 
     return app

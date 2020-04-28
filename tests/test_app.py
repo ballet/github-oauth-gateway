@@ -4,9 +4,8 @@ from unittest.mock import Mock
 import pytest
 import requests
 
-from ballet_oauth_gateway import db
 from ballet_oauth_gateway.conf import TestConfig
-from ballet_oauth_gateway.models import Auth
+from ballet_oauth_gateway.db import db, Auth
 
 
 def test_status(client):
