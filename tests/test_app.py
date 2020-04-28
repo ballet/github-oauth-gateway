@@ -1,3 +1,9 @@
+import json
+from unittest.mock import Mock
+
+import pytest
+import requests
+
 from ballet_oauth_gateway import db
 from ballet_oauth_gateway.conf import TestConfig
 from ballet_oauth_gateway.models import Auth
@@ -30,19 +36,42 @@ def test_authorize(client):
     assert auth.state == state
 
 
-def test_access_token(client, monkeypatch):
+@pytest.fixture
+def mock_access_token(monkeypatch):
+    data = {
+        "access_token": "123",
+        "scope": "repo,gist",
+        "token_type": "bearer"
+    }
+
+    # mock response to request token
+    mock_response = Mock(autospec=requests.Response)
+    mock_response.json.return_value = data
+
+    def mock_post(*args, **kwargs):
+        return mock_response
+
+    monkeypatch.setattr(requests, 'post', mock_post)
+
+    return data
+
+
+def test_access_token(client, mock_access_token):
     # prepare entry in db
     code = 'foo'
     state = 'bar'
+    token = 'baz'
+    mock_access_token['access_token'] = token
+
     auth = Auth(code=code, state=state)
     db.session.add(auth)
     db.session.commit()
 
-    # mock response to request token
-    # TODO
+    response = client.post('/api/access_token', data={'state': state})
+    data = json.loads(response.data)
 
-    assert True
-
+    assert data['access_token'] == token
+    assert Auth.query.filter_by(state=state).count() == 0
 
 
 def test_success(client):
