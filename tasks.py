@@ -12,7 +12,7 @@ def lint(c):
 
 @task
 def serve(c):
-    c.run('honcho start')
+    c.run('honcho start', pty=True)
 
 
 @task
