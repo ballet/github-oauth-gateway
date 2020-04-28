@@ -1,4 +1,6 @@
-from ballet_oauth_gateway import db
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
 
 
 class Auth(db.Model):

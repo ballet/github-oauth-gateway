@@ -1,10 +1,8 @@
 from flask import Flask
 from flask_bcrypt import Bcrypt
-from flask_sqlalchemy import SQLAlchemy
 
 
 bcrypt = Bcrypt()
-db = SQLAlchemy()
 
 
 def create_app(testing=False):
@@ -14,6 +12,7 @@ def create_app(testing=False):
     if testing:
         app.config.from_object('ballet_oauth_gateway.conf.TestConfig')
 
+    from ballet_oauth_gateway.db import db
     db.init_app(app)
     with app.app_context():
         db.create_all()

@@ -2,7 +2,7 @@ from flask import Blueprint, current_app, jsonify, request
 
 from ballet_oauth_gateway import db
 from ballet_oauth_gateway.auth import request_token
-from ballet_oauth_gateway.models import Auth
+from ballet_oauth_gateway.db import Auth
 
 blueprint = Blueprint('main', __name__)
 
