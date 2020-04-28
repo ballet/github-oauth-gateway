@@ -13,6 +13,7 @@ flask = "*"
 gunicorn = "*"
 flask-sqlalchemy = "*"
 flask-bcrypt = "*"
+requests = "*"
 
 [requires]
 python_version = "3.8"
