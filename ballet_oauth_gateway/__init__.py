@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 bcrypt = Bcrypt()
 db = SQLAlchemy()
 
+
 def create_app(testing=False):
     app = Flask(__name__)
     app.config.from_object('ballet_oauth_gateway.conf.Config')

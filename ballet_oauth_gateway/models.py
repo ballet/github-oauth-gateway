@@ -1,4 +1,5 @@
-from ballet_oauth_gateway import bcrypt, db
+from ballet_oauth_gateway import db
+
 
 class Auth(db.Model):
     __tablename__ = 'auths'
