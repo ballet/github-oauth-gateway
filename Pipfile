@@ -8,6 +8,7 @@ pytest = "*"
 invoke = "*"
 flake8 = "*"
 honcho = "*"
+pytest-socket = "*"
 
 [packages]
 flask = "*"

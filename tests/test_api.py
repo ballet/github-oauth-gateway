@@ -70,6 +70,14 @@ def test_access_token(client, mock_access_token):
     assert Auth.query.filter_by(state=state).count() == 0
 
 
+def test_access_token_no_code(client, socket_disabled):
+    state = 'nonexistent'
+    response = client.post(PREFIX + '/access_token', data={'state': state})
+    assert response.status_code == 400
+    data = json.loads(response.data)
+    assert 'No authorization' in data['message']
+
+
 def test_success(client):
     response = client.get(PREFIX + '/success')
     assert response.status_code == 200
