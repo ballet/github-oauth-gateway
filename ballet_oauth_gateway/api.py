@@ -1,4 +1,7 @@
-from flask import Blueprint, current_app, jsonify, request
+from http import HTTPStatus
+
+from flask import Blueprint, abort, current_app, jsonify, request
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 from ballet_oauth_gateway.auth import request_token
 from ballet_oauth_gateway.db import db, Auth
@@ -38,8 +41,11 @@ def access_code():
     state = request.form.get('state')
 
     # 2. get code from db
-    auth = Auth.query.filter_by(state=state).first()
-    code = auth.code
+    try:
+        auth = Auth.query.filter_by(state=state).one()
+        code = auth.code
+    except (NoResultFound, MultipleResultsFound):
+        abort(HTTPStatus.NOT_FOUND)
 
     # 3. request token from github
     client_id = current_app.config['CLIENT_ID']
