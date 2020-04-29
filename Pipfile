@@ -16,6 +16,7 @@ flask-sqlalchemy = "*"
 flask-bcrypt = "*"
 requests = "*"
 sqlalchemy = "*"
+werkzeug = "*"
 
 [requires]
 python_version = "3.8"

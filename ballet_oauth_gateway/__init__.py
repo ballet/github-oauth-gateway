@@ -1,3 +1,6 @@
+import json
+
+import werkzeug.exceptions
 from flask import Flask
 from flask_bcrypt import Bcrypt
 from sqlalchemy.exc import OperationalError
@@ -27,7 +30,29 @@ def create_app(testing=False):
 
     bcrypt.init_app(app)
 
+    # add generic status page
+    @app.route('/status')
+    def status():
+        return 'OK'
+
+    # register API
     from ballet_oauth_gateway.api import blueprint
-    app.register_blueprint(blueprint)
+    app.register_blueprint(blueprint, url_prefix='/api/v1')
+
+    # register generic json error handler
+    @app.errorhandler(werkzeug.exceptions.HTTPException)
+    def handle_exception(e):
+        """Return JSON instead of HTML for HTTP errors.
+
+        Source: https://flask.palletsprojects.com/en/1.1.x/errorhandling/#generic-exception-handlers
+        """
+        response = e.get_response()
+        response.data = json.dumps({
+            "code": e.code,
+            "name": e.name,
+            "message": e.description,
+        })
+        response.content_type = "application/json"
+        return response
 
     return app

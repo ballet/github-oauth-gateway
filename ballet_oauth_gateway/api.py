@@ -1,7 +1,6 @@
-from http import HTTPStatus
-
-from flask import Blueprint, abort, current_app, jsonify, request
+from flask import Blueprint, current_app, request
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+from werkzeug.exceptions import BadRequest
 
 from ballet_oauth_gateway.auth import request_token
 from ballet_oauth_gateway.db import db, Auth
@@ -9,17 +8,15 @@ from ballet_oauth_gateway.db import db, Auth
 blueprint = Blueprint('main', __name__)
 
 
-@blueprint.route('/status')
-def status():
-    return 'OK'
-
-
-@blueprint.route('/api/app_id')
+@blueprint.route('/app_id')
 def app_id():
-    return current_app.config['CLIENT_ID']
+    return {
+        'client_id': current_app.config['CLIENT_ID'],
+        'message': None,
+    }
 
 
-@blueprint.route('/api/authorize', methods=['GET'])
+@blueprint.route('/authorize', methods=['GET'])
 def authorize():
     """GitHub calls back here with code and copy of unique state"""
     # 1. get state and code from request
@@ -31,10 +28,12 @@ def authorize():
     db.session.add(auth)
     db.session.commit()
 
-    return 'OK'
+    return {
+        'message': 'OK',
+    }
 
 
-@blueprint.route('/api/access_token', methods=['POST'])
+@blueprint.route('/access_token', methods=['POST'])
 def access_code():
     """User's client calls back here to request token"""
     # 1. get state from request
@@ -45,7 +44,7 @@ def access_code():
         auth = Auth.query.filter_by(state=state).one()
         code = auth.code
     except (NoResultFound, MultipleResultsFound):
-        abort(HTTPStatus.NOT_FOUND)
+        raise BadRequest(description='No authorization code found for this state, need to re-authenticate')
 
     # 3. request token from github
     client_id = current_app.config['CLIENT_ID']
@@ -58,11 +57,14 @@ def access_code():
     db.session.commit()
 
     # 5. respond with token
-    return jsonify(token_info)
+    token_info['message'] = None
+    return token_info
 
 
 @blueprint.route('/success', methods=['GET'])
 def success():
     """User redirected here after authing with GitHub"""
     # TODO render template
-    return 'You are successfully authorized'
+    return {
+        'message': 'OK',
+    }
