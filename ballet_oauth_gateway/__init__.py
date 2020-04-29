@@ -14,15 +14,16 @@ def create_app(testing=False):
         app.config.from_object('ballet_oauth_gateway.conf.TestConfig')
 
     for key in app.config:
-        print(f'{key}={app.config[key]}')
+        app.logger.info(f'{key}={app.config[key]}')
 
     from ballet_oauth_gateway.db import db
     db.init_app(app)
     with app.app_context():
         try:
             db.create_all()
+            app.logger.info('db.create_all: created tables')
         except OperationalError:
-            pass
+            app.logger.info('db.create_all: did NOT create tables, maybe they already exist?')
 
     bcrypt.init_app(app)
 
