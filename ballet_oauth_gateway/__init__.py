@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_bcrypt import Bcrypt
+from sqlalchemy.exc import OperationalError
 
 
 bcrypt = Bcrypt()
@@ -18,7 +19,10 @@ def create_app(testing=False):
     from ballet_oauth_gateway.db import db
     db.init_app(app)
     with app.app_context():
-        db.create_all()
+        try:
+            db.create_all()
+        except OperationalError:
+            pass
 
     bcrypt.init_app(app)
 
