@@ -13,7 +13,7 @@ PREFIX = '/api/v1'
 def test_app_id(client):
     response = client.get(PREFIX + '/app_id')
     assert response.status_code == 200
-    response_json = json.load(response.data)
+    response_json = json.loads(response.data)
     assert 'client_id' in response_json
     assert TestConfig.CLIENT_ID == response_json['client_id']
 
@@ -75,7 +75,6 @@ def test_access_token_no_code(client, socket_disabled):
     response = client.post(PREFIX + '/access_token', data={'state': state})
     assert response.status_code == 400
     data = json.loads(response.data)
-    assert 'No authorization' in data['message']
 
 
 def test_success(client):
