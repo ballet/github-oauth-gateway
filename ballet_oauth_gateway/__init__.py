@@ -2,11 +2,7 @@ import json
 
 import werkzeug.exceptions
 from flask import Flask
-from flask_bcrypt import Bcrypt
 from sqlalchemy.exc import OperationalError
-
-
-bcrypt = Bcrypt()
 
 
 def create_app(testing=False):
@@ -28,8 +24,6 @@ def create_app(testing=False):
         except OperationalError:
             app.logger.info('db.create_all: did NOT create tables, maybe they already exist?')
 
-    bcrypt.init_app(app)
-
     # add generic status page
     @app.route('/status')
     def status():
@@ -48,11 +42,11 @@ def create_app(testing=False):
         """
         response = e.get_response()
         response.data = json.dumps({
-            "code": e.code,
-            "name": e.name,
-            "message": e.description,
+            'code': e.code,
+            'name': e.name,
+            'message': e.description,
         })
-        response.content_type = "application/json"
+        response.content_type = 'application/json'
         return response
 
     return app
