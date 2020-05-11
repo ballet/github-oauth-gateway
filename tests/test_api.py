@@ -75,6 +75,8 @@ def test_access_token_no_code(client, socket_disabled):
     response = client.post(PREFIX + '/access_token', data={'state': state})
     assert response.status_code == 400
     data = json.loads(response.data)
+    message = data['message']
+    assert 'no authorization code' in message.lower()
 
 
 def test_success(client):

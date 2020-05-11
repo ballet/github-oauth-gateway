@@ -23,7 +23,11 @@ def authorize():
     code = request.args.get('code')
     state = request.args.get('state')
 
-    # 2. insert to db
+    # 2. delete any previous records for this state, as the rest of
+    #    the oauth flow may have failed at the user's end
+    db.session.query(Auth).filter_by(state=state).delete()
+
+    # 3. insert to db
     auth = Auth(code=code, state=state)
     db.session.add(auth)
     db.session.commit()
