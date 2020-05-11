@@ -7,7 +7,7 @@ def test(c):
 
 @task
 def lint(c):
-    c.run('flake8 ballet_oauth_gateway tests')
+    c.run('flake8 github_oauth_gateway tests')
 
 
 @task

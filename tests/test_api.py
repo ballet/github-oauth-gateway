@@ -4,8 +4,8 @@ from unittest.mock import Mock
 import pytest
 import requests
 
-from ballet_oauth_gateway.conf import TestConfig
-from ballet_oauth_gateway.db import db, Auth
+from github_oauth_gateway.conf import TestConfig
+from github_oauth_gateway.db import db, Auth
 
 PREFIX = '/api/v1'
 

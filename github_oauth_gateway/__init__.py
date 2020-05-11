@@ -7,15 +7,15 @@ from sqlalchemy.exc import OperationalError
 
 def create_app(testing=False):
     app = Flask(__name__)
-    app.config.from_object('ballet_oauth_gateway.conf.Config')
+    app.config.from_object('github_oauth_gateway.conf.Config')
 
     if testing:
-        app.config.from_object('ballet_oauth_gateway.conf.TestConfig')
+        app.config.from_object('github_oauth_gateway.conf.TestConfig')
 
     for key in app.config:
         app.logger.info(f'{key}={app.config[key]}')
 
-    from ballet_oauth_gateway.db import db
+    from github_oauth_gateway.db import db
     db.init_app(app)
     with app.app_context():
         try:
@@ -30,7 +30,7 @@ def create_app(testing=False):
         return 'OK'
 
     # register API
-    from ballet_oauth_gateway.api import blueprint
+    from github_oauth_gateway.api import blueprint
     app.register_blueprint(blueprint, url_prefix='/api/v1')
 
     # register generic json error handler

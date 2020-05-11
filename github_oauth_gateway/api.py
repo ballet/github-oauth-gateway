@@ -2,8 +2,8 @@ from flask import Blueprint, current_app, request
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from werkzeug.exceptions import BadRequest
 
-from ballet_oauth_gateway.auth import request_token
-from ballet_oauth_gateway.db import db, Auth
+from github_oauth_gateway.auth import request_token
+from github_oauth_gateway.db import db, Auth
 
 blueprint = Blueprint('main', __name__)
 
@@ -20,8 +20,11 @@ def app_id():
 def authorize():
     """GitHub calls back here with code and copy of unique state"""
     # 1. get state and code from request
-    code = request.args.get('code')
-    state = request.args.get('state')
+    try:
+        code = request.args['code']
+        state = request.args['state']
+    except KeyError:
+        raise BadRequest(description='Need to provide code and state params')
 
     # 2. delete any previous records for this state, as the rest of
     #    the oauth flow may have failed at the user's end
@@ -48,7 +51,7 @@ def access_code():
         auth = Auth.query.filter_by(state=state).one()
         code = auth.code
     except (NoResultFound, MultipleResultsFound):
-        raise BadRequest(description='No authorization code found for this state, need to re-authenticate')
+        raise BadRequest(description='No authorization code found for this state, may need to re-authenticate')
 
     # 3. request token from github
     client_id = current_app.config['CLIENT_ID']

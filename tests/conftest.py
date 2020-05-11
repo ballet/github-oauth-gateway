@@ -2,8 +2,8 @@ import tempfile
 
 import pytest
 
-from ballet_oauth_gateway import create_app
-from ballet_oauth_gateway.conf import Config
+from github_oauth_gateway import create_app
+from github_oauth_gateway.conf import Config
 
 
 @pytest.fixture
