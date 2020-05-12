@@ -44,7 +44,8 @@ def authorize():
 def access_code():
     """User's client calls back here to request token"""
     # 1. get state from request
-    state = request.json['state']
+    content = request.get_json(force=True)
+    state = content['state']
 
     # 2. get code from db
     try:
@@ -69,7 +70,7 @@ def access_code():
     # github may include error code in body
     if 'error' in token_info and token_info['error']:
         current_app.logger.exception('got error response from GitHub: {token_info}')
-        raise BadRequest(description=f'Authorization token denied')
+        raise BadRequest(description='Authorization token denied')
 
     # 4. delete line from db
     db.session.delete(auth)
