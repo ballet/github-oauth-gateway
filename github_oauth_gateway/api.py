@@ -44,10 +44,7 @@ def authorize():
 def access_code():
     """User's client calls back here to request token"""
     # 1. get state from request
-    try:
-        state = request.form['state']
-    except KeyError:
-        raise BadRequest(description='Need to provided state in data')
+    state = request.json['state']
 
     # 2. get code from db
     try:
