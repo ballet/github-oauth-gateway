@@ -63,7 +63,7 @@ def test_access_token(client, mock_access_token):
     db.session.add(auth)
     db.session.commit()
 
-    response = client.post(PREFIX + '/access_token', data={'state': state})
+    response = client.post(PREFIX + '/access_token', json={'state': state})
     data = json.loads(response.data)
 
     assert data['access_token'] == token
@@ -72,7 +72,7 @@ def test_access_token(client, mock_access_token):
 
 def test_access_token_no_code(client, socket_disabled):
     state = 'nonexistent'
-    response = client.post(PREFIX + '/access_token', data={'state': state})
+    response = client.post(PREFIX + '/access_token', json={'state': state, 'timeout': 0.1})
     assert response.status_code == 400
     data = json.loads(response.data)
     message = data['message']
