@@ -66,6 +66,11 @@ def access_code():
     redirect_uri = None  # TODO
     token_info = request_token(client_id, client_secret, code, redirect_uri, state)
 
+    # github may include error code in body
+    if 'error' in token_info and token_info['error']:
+        current_app.logger.exception('got error response from GitHub: {token_info}')
+        raise BadRequest(description=f'Authorization token denied')
+
     # 4. delete line from db
     db.session.delete(auth)
     db.session.commit()
