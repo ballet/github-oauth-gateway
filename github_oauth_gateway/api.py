@@ -1,6 +1,6 @@
 from flask import Blueprint, current_app, request
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, InternalServerError
 
 from github_oauth_gateway.auth import request_token
 from github_oauth_gateway.db import db, Auth
@@ -44,14 +44,24 @@ def authorize():
 def access_code():
     """User's client calls back here to request token"""
     # 1. get state from request
-    state = request.form.get('state')
+    try:
+        state = request.form['state']
+    except KeyError:
+        raise BadRequest(description='Need to provided state in data')
 
     # 2. get code from db
     try:
-        auth = Auth.query.filter_by(state=state).one()
+        auth = db.session.query(Auth).filter_by(state=state).one()
         code = auth.code
-    except (NoResultFound, MultipleResultsFound):
+    except NoResultFound:
         raise BadRequest(description='No authorization code found for this state, may need to re-authenticate')
+    except MultipleResultsFound:
+        try:
+            db.session.query(Auth).filter_by(state=state).delete()
+            db.session.commit()
+        finally:
+            raise InternalServerError(
+                description='unexpectedly found multiple codes for this state, try auth flow from beginning')
 
     # 3. request token from github
     client_id = current_app.config['CLIENT_ID']
