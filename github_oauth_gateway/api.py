@@ -1,5 +1,3 @@
-import time
-
 from flask import Blueprint, current_app, request
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from werkzeug.exceptions import BadRequest, InternalServerError
@@ -48,33 +46,20 @@ def access_code():
     # 1. get state from request
     content = request.get_json(force=True)
     state = content['state']
-    timeout = content.get('timeout', current_app.config['ACCESS_CODE_TIMEOUT'])
-    interval = current_app.config['ACCESS_CODE_POLL_INTERVAL']
-    start = time.time()
 
-    # 2. get code from db, waiting if necessary
-    while True:
+    # 2. get code from db
+    try:
+        auth = db.session.query(Auth).filter_by(state=state).one()
+        code = auth.code
+    except NoResultFound:
+        raise BadRequest(description='No authorization code found for this state, may need to re-authenticate')
+    except MultipleResultsFound:
         try:
-            auth = db.session.query(Auth).filter_by(state=state).one()
-            code = auth.code
-            break
-        except NoResultFound:
-            elapsed = time.time() - start
-            if elapsed > timeout:
-                raise BadRequest(description='No authorization code found for this state, may need to re-authenticate')
-            else:
-                sleep_time = min(interval, timeout - elapsed)
-                current_app.logger.info(
-                    f'Didn\'t find state, will sleep for {sleep_time} seconds ({timeout - elapsed} remaining)')
-                time.sleep(sleep_time)
-                continue
-        except MultipleResultsFound:
-            try:
-                db.session.query(Auth).filter_by(state=state).delete()
-                db.session.commit()
-            finally:
-                raise InternalServerError(
-                    description='unexpectedly found multiple codes for this state, try auth flow from beginning')
+            db.session.query(Auth).filter_by(state=state).delete()
+            db.session.commit()
+        finally:
+            raise InternalServerError(
+                description='unexpectedly found multiple codes for this state, try auth flow from beginning')
 
     # 3. request token from github
     client_id = current_app.config['CLIENT_ID']
