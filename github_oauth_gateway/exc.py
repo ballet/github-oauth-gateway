@@ -1,4 +1,4 @@
-from werkzeug.exception import BadRequest, InternalServerError
+from werkzeug.exceptions import BadRequest, InternalServerError
 
 
 class NoAuthCode(BadRequest):
