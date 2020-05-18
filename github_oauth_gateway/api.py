@@ -42,7 +42,7 @@ def authorize():
 
 
 @blueprint.route('/access_token', methods=['POST'])
-def access_code():
+def access_token():
     """User's client calls back here to request token"""
     # 1. get state from request
     content = request.get_json(force=True)
