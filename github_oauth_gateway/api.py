@@ -1,9 +1,10 @@
 from flask import Blueprint, current_app, request
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-from werkzeug.exceptions import BadRequest, InternalServerError
+from werkzeug.exceptions import BadRequest
 
 from github_oauth_gateway.auth import request_token
 from github_oauth_gateway.db import db, Auth
+from github_oauth_gateway.exc import AuthTokenExchangeDenied, MultipleAuthCodes, NoAuthCode
 
 blueprint = Blueprint('main', __name__)
 
@@ -52,14 +53,13 @@ def access_code():
         auth = db.session.query(Auth).filter_by(state=state).one()
         code = auth.code
     except NoResultFound:
-        raise BadRequest(description='No authorization code found for this state, may need to re-authenticate')
+        raise NoAuthCode
     except MultipleResultsFound:
         try:
             db.session.query(Auth).filter_by(state=state).delete()
             db.session.commit()
         finally:
-            raise InternalServerError(
-                description='unexpectedly found multiple codes for this state, try auth flow from beginning')
+            raise MultipleAuthCodes
 
     # 3. request token from github
     client_id = current_app.config['CLIENT_ID']
@@ -70,7 +70,7 @@ def access_code():
     # github may include error code in body
     if 'error' in token_info and token_info['error']:
         current_app.logger.exception('got error response from GitHub: {token_info}')
-        raise BadRequest(description='Authorization token denied')
+        raise AuthTokenExchangeDenied
 
     # 4. delete line from db
     db.session.delete(auth)
