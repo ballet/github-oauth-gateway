@@ -1,4 +1,7 @@
-from flask import Blueprint, current_app, request
+import datetime
+import socket
+
+from flask import Blueprint, current_app, render_template, request
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from werkzeug.exceptions import BadRequest
 
@@ -47,6 +50,7 @@ def access_token():
     # 1. get state from request
     content = request.get_json(force=True)
     state = content['state']
+    current_app.logger.info(f'Got state {state}')
 
     # 2. get code from db
     try:
@@ -84,7 +88,10 @@ def access_token():
 @blueprint.route('/success', methods=['GET'])
 def success():
     """User redirected here after authing with GitHub"""
-    # TODO render template
-    return {
-        'message': 'OK',
+    details = {
+        'gateway app id': current_app.config['CLIENT_ID'],
+        'gateway host': socket.gethostname(),
+        'gateway homepage': current_app.config['HOMEPAGE'],
+        'timestamp': datetime.datetime.utcnow().isoformat(),
     }
+    return render_template('success.html', details=details)
