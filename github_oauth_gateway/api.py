@@ -1,7 +1,7 @@
 import datetime
 import socket
 
-from flask import Blueprint, current_app, render_template, request
+from flask import Blueprint, current_app, redirect, render_template, request, url_for
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from werkzeug.exceptions import BadRequest
 
@@ -39,9 +39,7 @@ def authorize():
     db.session.add(auth)
     db.session.commit()
 
-    return {
-        'message': 'OK',
-    }
+    return redirect(url_for('.success'))
 
 
 @blueprint.route('/access_token', methods=['POST'])
