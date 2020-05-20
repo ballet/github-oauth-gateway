@@ -21,8 +21,13 @@ def test_app_id(client):
 def test_authorize(client):
     code = 'foo'
     state = 'bar'
-    response = client.get(PREFIX + f'/authorize?code={code}&state={state}')
+
+    response = client.get(PREFIX + f'/authorize?code={code}&state={state}', follow_redirects=True)
+
+    # should have a generic success page
     assert response.status_code == 200
+    assert 'doctype html' in response.data.decode().lower()
+    assert 'success' in response.data.decode().lower()
 
     auths = Auth.query.all()
     assert len(auths) == 1
