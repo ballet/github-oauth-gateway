@@ -12,9 +12,6 @@ def create_app(testing=False):
     if testing:
         app.config.from_object('github_oauth_gateway.conf.TestConfig')
 
-    for key in app.config:
-        app.logger.info(f'{key}={app.config[key]}')
-
     from github_oauth_gateway.db import db
     db.init_app(app)
     with app.app_context():
@@ -28,10 +25,6 @@ def create_app(testing=False):
     @app.route('/status')
     def status():
         return 'OK'
-
-    # register API
-    from github_oauth_gateway.api import blueprint
-    app.register_blueprint(blueprint, url_prefix='/api/v1')
 
     # register generic json error handler
     @app.errorhandler(werkzeug.exceptions.HTTPException)
@@ -48,5 +41,9 @@ def create_app(testing=False):
         })
         response.content_type = 'application/json'
         return response
+
+    # register API
+    from github_oauth_gateway.api import blueprint
+    app.register_blueprint(blueprint, url_prefix='/api/v1')
 
     return app
