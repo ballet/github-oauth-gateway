@@ -1,5 +1,4 @@
 import datetime
-from collections import OrderedDict
 
 from flask import Blueprint, current_app, redirect, render_template, request, url_for
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound

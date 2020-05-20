@@ -6,8 +6,8 @@ class NoAuthCode(BadRequest):
 
 
 class MultipleAuthCodes(InternalServerError):
-    description='unexpectedly found multiple codes for this state, try auth flow from beginning'
+    description = 'unexpectedly found multiple codes for this state, try auth flow from beginning'
 
 
 class AuthTokenExchangeDenied(BadRequest):
-    description='Authorization token denied'
+    description = 'Authorization token denied'
