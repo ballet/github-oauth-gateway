@@ -41,8 +41,8 @@
     <p>You have successfully authorized your application with GitHub.</p>
     <h3>Details</h3>
     <ul>
-    {% for key in details %}
-        <li>{{ key | e }}: <tt>{{ details[key] | e }}</tt></li>
+    {% for key, value in details %}
+        <li>{{ key | e }}: <tt>{{ value | e }}</tt></li>
     {% endfor %}
     </ul>
 </div>

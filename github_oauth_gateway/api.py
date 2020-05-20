@@ -1,5 +1,5 @@
 import datetime
-import socket
+from collections import OrderedDict
 
 from flask import Blueprint, current_app, redirect, render_template, request, url_for
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
@@ -86,10 +86,10 @@ def access_token():
 @blueprint.route('/success', methods=['GET'])
 def success():
     """User redirected here after authing with GitHub"""
-    details = {
-        'gateway app id': current_app.config['CLIENT_ID'],
-        'gateway host': socket.gethostname(),
-        'gateway homepage': current_app.config['HOMEPAGE'],
-        'timestamp': datetime.datetime.utcnow().isoformat(),
-    }
+    details = [
+        ('gateway app id', current_app.config['CLIENT_ID']),
+        ('gateway host', current_app.config['APP_DOMAIN']),
+        ('gateway homepage', current_app.config['HOMEPAGE']),
+        ('timestamp', datetime.datetime.utcnow().isoformat()),
+    ]
     return render_template('success.html', details=details)
