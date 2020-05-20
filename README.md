@@ -6,6 +6,9 @@ Primarily used by
 [Assemblé](https://github.com/HDI-Project/ballet-assemble)
 to authenticate Jupyter Lab sessions with GitHub.
 
+There is a free and public deployment at https://github-oauth-gateway.herokuapp.com or you
+can deploy your own instance.
+
 ## Usage
 
 1. get this gateway app's client ID
