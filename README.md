@@ -3,7 +3,7 @@
 Gateway for authenticating with GitHub using OAuth.
 
 Primarily used by
-[ballet-submit-labextension](https://github.com/HDI-Project/ballet-submit-labextension)
+[Assemblé](https://github.com/HDI-Project/ballet-assemble)
 to authenticate Jupyter Lab sessions with GitHub.
 
 ## Usage
@@ -15,6 +15,10 @@ to authenticate Jupyter Lab sessions with GitHub.
 3. request an access token from the gateway; it will exchange the secret code
    for an access token with GitHub, send you the access token, and delete any
    record of your request.
+   
+## Deployment
+
+There is a reference deployment at https://github-oauth-gateway.herokuapp.com/
 
 ### API Reference
 
